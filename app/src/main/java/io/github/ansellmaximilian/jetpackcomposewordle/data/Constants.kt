@@ -15,3 +15,9 @@ val words: Set<String> = setOf(
     "clash", "dizzy", "elite", "flock", "glyph", "hover", "ivied", "joked", "knobs", "lucky",
     "motto", "novel", "omega", "piano", "quirk", "relic", "shiny", "trend", "unity", "vexed"
 )
+
+enum class Correctness {
+    INCORRECT,
+    PLACEMENT,
+    CORRECT
+}

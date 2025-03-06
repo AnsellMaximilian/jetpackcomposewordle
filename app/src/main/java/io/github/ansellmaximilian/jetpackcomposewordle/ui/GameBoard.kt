@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.ansellmaximilian.jetpackcomposewordle.data.Correctness
 
 
 @Composable
@@ -60,6 +61,26 @@ fun GameBoard(gameState: GameState = viewModel()) {
             repeat(6) {
                 val word = gameState.userGuesses.getOrNull(it)
                 val isSubmitted = (gameState.userGuesses.size - 1) > it || gameState.isGameOver
+
+                val targetWord = gameState.currentWord.uppercase()
+                val wordFrequency = targetWord.groupingBy { letter -> letter }.eachCount().toMutableMap()
+
+                val correctness: MutableList<Correctness> = MutableList(5) { Correctness.INCORRECT }
+
+                word?.forEachIndexed { idx, char ->
+                    if (char.equals(targetWord[idx], ignoreCase = true)) {
+                        correctness[idx] = Correctness.CORRECT
+                        wordFrequency[char] = wordFrequency[char]?.minus(1) ?: 0
+                    }
+                }
+
+                word?.forEachIndexed { idx, char ->
+                    if (correctness[idx] == Correctness.INCORRECT && wordFrequency[char]!! > 0) {
+                        correctness[idx] = Correctness.PLACEMENT
+                        wordFrequency[char] = wordFrequency[char]?.minus(1) ?: 0
+                    }
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -67,8 +88,12 @@ fun GameBoard(gameState: GameState = viewModel()) {
                 ) {
                     repeat(5) { letterIdx ->
                         val letter = word?.getOrNull(letterIdx)?.toString() ?: ""
-                        val isCorrectLetter = isSubmitted && gameState.currentWord.contains(letter, ignoreCase = true)
-                        val isCorrect = isSubmitted && letter.isNotEmpty() && letter.equals(gameState.currentWord[letterIdx].toString(), ignoreCase = true)
+
+                        val backgroundColor = when (correctness[letterIdx]) {
+                            Correctness.CORRECT -> Color(0xFF2E7D32)
+                            Correctness.PLACEMENT -> Color(0xFFF9A825)
+                            else -> Color(0xFF424242)
+                        }
 
                         OutlinedTextField(
                             value = letter,
@@ -79,13 +104,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
                             readOnly = true,
                             enabled = false,
                             colors = OutlinedTextFieldDefaults.colors(
-                                disabledContainerColor = if (isSubmitted) {
-                                    when {
-                                        isCorrect -> Color(0xFF2E7D32)
-                                        isCorrectLetter -> Color(0xFFF9A825)
-                                        else -> Color(0xFF424242)
-                                    }
-                                } else Color.White,
+                                disabledContainerColor = if (isSubmitted) backgroundColor else Color.White,
                                 disabledTextColor = if(isSubmitted) Color.White else Color.Black,
                             ),
 
