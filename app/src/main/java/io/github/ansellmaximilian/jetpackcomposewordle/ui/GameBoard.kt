@@ -37,6 +37,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.ansellmaximilian.jetpackcomposewordle.data.Correctness
+import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_CHANCES
+import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_WORD_LENGTH
 
 
 @Composable
@@ -58,7 +60,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            repeat(6) {
+            repeat(MAX_CHANCES) {
                 val word = gameState.userGuesses.getOrNull(it)
                 val isSubmitted = (gameState.userGuesses.size - 1) > it || gameState.isGameOver
 
@@ -75,7 +77,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
                 }
 
                 word?.forEachIndexed { idx, char ->
-                    if (correctness[idx] == Correctness.INCORRECT && wordFrequency[char]!! > 0) {
+                    if (correctness[idx] == Correctness.INCORRECT && wordFrequency[char] != null && wordFrequency[char]!! > 0) {
                         correctness[idx] = Correctness.PLACEMENT
                         wordFrequency[char] = wordFrequency[char]?.minus(1) ?: 0
                     }
@@ -86,7 +88,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    repeat(5) { letterIdx ->
+                    repeat(MAX_WORD_LENGTH) { letterIdx ->
                         val letter = word?.getOrNull(letterIdx)?.toString() ?: ""
 
                         val backgroundColor = when (correctness[letterIdx]) {
