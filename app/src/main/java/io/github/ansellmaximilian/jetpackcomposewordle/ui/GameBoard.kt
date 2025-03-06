@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
@@ -73,19 +74,21 @@ fun GameBoard(gameState: GameState = viewModel()) {
                             value = letter,
                             onValueChange = {},
                             modifier = Modifier.size(50.dp),
-                            textStyle = TextStyle(textAlign = TextAlign.Center),
+                            textStyle = TextStyle(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
                             singleLine = true,
                             readOnly = true,
                             enabled = false,
-
                             colors = OutlinedTextFieldDefaults.colors(
-                                disabledContainerColor = if(isSubmitted) {
-                                    if(isCorrect) Color.Green
-                                    else if(isCorrectLetter) Color.Yellow
-                                    else Color.Red
+                                disabledContainerColor = if (isSubmitted) {
+                                    when {
+                                        isCorrect -> Color(0xFF2E7D32)
+                                        isCorrectLetter -> Color(0xFFF9A825)
+                                        else -> Color(0xFF424242)
+                                    }
                                 } else Color.White,
                                 disabledTextColor = if(isSubmitted) Color.White else Color.Black,
-                            )
+                            ),
+
                         )
                     }
                 }
