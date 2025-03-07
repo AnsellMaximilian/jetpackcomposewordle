@@ -1,8 +1,11 @@
 package io.github.ansellmaximilian.jetpackcomposewordle.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Column
@@ -45,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import io.github.ansellmaximilian.jetpackcomposewordle.data.Correctness
 import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_CHANCES
@@ -107,20 +111,21 @@ fun GameBoard(gameState: GameState = viewModel()) {
                             else -> Color(0xFF424242)
                         }
 
-                        OutlinedTextField(
-                            value = letter,
-                            onValueChange = {},
-                            modifier = Modifier.size(50.dp),
-                            textStyle = TextStyle(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
-                            singleLine = true,
-                            readOnly = true,
-                            enabled = false,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledContainerColor = if (isSubmitted) backgroundColor else Color.White,
-                                disabledTextColor = if(isSubmitted) Color.White else Color.Black,
-                            ),
-
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .background(if(isSubmitted) backgroundColor else Color.White, shape = RoundedCornerShape(4.dp))
+                                .border(2.dp, Color.Gray, shape = RoundedCornerShape(4.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = letter,
+                                color = if(isSubmitted) Color.White else Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
