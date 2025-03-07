@@ -1,8 +1,10 @@
 package io.github.ansellmaximilian.jetpackcomposewordle.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,6 +62,8 @@ import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_WORD_LENGTH
 fun GameBoard(gameState: GameState = viewModel()) {
     val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -70,7 +75,12 @@ fun GameBoard(gameState: GameState = viewModel()) {
         Text(text = gameState.currentWord)
 
         Column(
-            modifier =  Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                },
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -114,7 +124,10 @@ fun GameBoard(gameState: GameState = viewModel()) {
                         Box(
                             modifier = Modifier
                                 .size(50.dp)
-                                .background(if(isSubmitted) backgroundColor else Color.White, shape = RoundedCornerShape(4.dp))
+                                .background(
+                                    if (isSubmitted) backgroundColor else Color.White,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
                                 .border(2.dp, Color.Gray, shape = RoundedCornerShape(4.dp)),
                             contentAlignment = Alignment.Center
                         ) {
@@ -159,6 +172,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+        keyboardController?.show()
     }
 }
 
