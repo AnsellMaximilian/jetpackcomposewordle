@@ -1,6 +1,5 @@
 package io.github.ansellmaximilian.jetpackcomposewordle.ui
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,9 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -27,11 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -45,14 +41,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import io.github.ansellmaximilian.jetpackcomposewordle.data.Correctness
 import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_CHANCES
 import io.github.ansellmaximilian.jetpackcomposewordle.data.MAX_WORD_LENGTH
@@ -71,9 +65,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Wordle")
-        Text(text = gameState.currentWord)
-
+        Text(text = "Wordle", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,7 +159,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
 
         )
 
-        if(gameState.isGameOver) GameOverDialog(onReset = { gameState.reset() }, isWin = gameState.checkWin())
+        if(gameState.isGameOver) GameOverDialog(onReset = { gameState.reset() }, word = gameState.currentWord, isWin = gameState.checkWin())
     }
 
     LaunchedEffect(Unit) {
@@ -177,7 +169,7 @@ fun GameBoard(gameState: GameState = viewModel()) {
 }
 
 @Composable
-fun GameOverDialog(onReset: () -> Unit, isWin: Boolean, modifier: Modifier = Modifier) {
+fun GameOverDialog(onReset: () -> Unit, isWin: Boolean, word: String, modifier: Modifier = Modifier) {
     AlertDialog(
         onDismissRequest = {},
         modifier = modifier,
@@ -185,16 +177,14 @@ fun GameOverDialog(onReset: () -> Unit, isWin: Boolean, modifier: Modifier = Mod
             Text(text = "Game Over")
         },
         text = {
-            Text(text = if(isWin) "You Win!" else "Better Luck Next Time!", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth() )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(text = if(isWin) "You Win!" else "Better Luck Next Time!", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth() )
+                Text(text = "The word was ${word.uppercase()}", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth() )
+            }
         },
         confirmButton = {
             TextButton(onClick = onReset) {
                 Text(text = "Play Again")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {  }) {
-                Text(text = "Back")
             }
         },
         icon = {
